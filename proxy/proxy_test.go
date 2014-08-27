@@ -774,20 +774,16 @@ var _ = Describe("Proxy", func() {
 	})
 
 	It("maintains most percent-encoded values in URLs", func() {
-		shouldEcho("/abc%25%20%2A%21%22%3F%5Edef", "/abc%25%20%2A%21%22%3F%5Edef") // %, <space>, *, !, ", £, ^
+		shouldEcho("/abc%25%20%22%3F%5Edef", "/abc%25%20%22%3F%5Edef") // %, <space>, ", £, ^
 	})
 
 	It("decodes some percent encoded characters in URLs", func() {
 		shouldEcho("/abc%2b%2fdef", "/abc+/def")
 	})
 
-	It("encodes reserved characters in URLs", func() {
-		shouldEcho("/abc!*'()def", "/abc%21%2A%27%28%29def")
-	})
-
-	It("fails to encode certain reserved characters in URLs", func() {
+	It("does not encode reserved characters in URLs", func() {
 		rfc3986_reserved_characters := "!*'();:@&=+$,/?#[]"
-		shouldEcho("/abc"+rfc3986_reserved_characters+"def", "/abc%21%2A%27%28%29;:@&=+$,/?#[]def")
+		shouldEcho("/"+rfc3986_reserved_characters, "/"+rfc3986_reserved_characters)
 	})
 
 	It("does not encode unreserved characters in URLs", func() {
@@ -795,7 +791,7 @@ var _ = Describe("Proxy", func() {
 	})
 
 	It("percent-encodes special characters in URLs", func() {
-		shouldEcho("/abc*!\"£^def", "/abc%2A%21%22%C2%A3%5Edef")
+		shouldEcho("/abc\"£^def", "/abc%22%C2%A3%5Edef")
 	})
 
 	It("handles requests with encoded query strings", func() {
